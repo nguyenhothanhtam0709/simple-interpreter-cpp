@@ -16,6 +16,9 @@ void Interpreter::_error() const
     __THROW_PARSING_ERROR
 }
 
+// MARK: Lexer code
+// Below codes are lexer code
+
 void Interpreter::_advance() noexcept
 {
     _pos++;
@@ -82,6 +85,9 @@ Token *Interpreter::_get_next_token()
     return new Token(TokenType::END_OF_FILE, NULL_CHAR);
 }
 
+// MARK: Parser code
+// Below codes are parser code
+
 void Interpreter::_eat(TokenType token_type)
 {
     if (_current_token != nullptr && _current_token->getType() == token_type)
@@ -94,39 +100,38 @@ void Interpreter::_eat(TokenType token_type)
     }
 }
 
+std::string Interpreter::_term()
+{
+    Token *token = _current_token;
+    _eat(TokenType::INTEGER);
+    return token->getValue();
+}
+
 int Interpreter::expr()
 {
-    _current_token = _get_next_token();
+    Token *first_token = _get_next_token();
+    _current_token = first_token;
 
-    Token *left = _current_token;
-    _eat(TokenType::INTEGER);
+    int result = std::stoi(_term());
+    delete first_token;
+    first_token = nullptr;
 
-    Token *op = _current_token;
-    if (op->getType() == TokenType::PLUS)
+    while (_current_token != nullptr && (_current_token->getType() == TokenType::PLUS || _current_token->getType() == TokenType::MINUS))
     {
-        _eat(TokenType::PLUS);
-    }
-    else
-    {
-        _eat(TokenType::MINUS);
-    }
+        Token *token = _current_token;
+        if (token->getType() == TokenType::PLUS)
+        {
+            _eat(TokenType::PLUS);
+            result += std::stoi(_term());
+        }
+        else if (token->getType() == TokenType::MINUS)
+        {
+            _eat(TokenType::MINUS);
+            result -= std::stoi(_term());
+        }
 
-    Token *right = _current_token;
-    _eat(TokenType::INTEGER);
-
-    int result;
-    if (op->getType() == TokenType::PLUS)
-    {
-        result = std::stoi(left->getValue()) + std::stoi(right->getValue());
+        delete token;
     }
-    else
-    {
-        result = std::stoi(left->getValue()) - std::stoi(right->getValue());
-    }
-
-    delete left;
-    delete op;
-    delete right;
 
     return result;
 }

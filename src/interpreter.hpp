@@ -43,6 +43,9 @@ private:
 
     void _eat(TokenType token_type);
 
+    /// @brief Return an INTEGER token value.
+    std::string _term();
+
 public:
     Interpreter(const std::string &text);
     ~Interpreter();
