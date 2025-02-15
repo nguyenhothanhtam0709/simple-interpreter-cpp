@@ -4,6 +4,14 @@
 #include <string>
 #include <token.hpp>
 
+#define __THROW_PARSING_ERROR \
+    throw std::runtime_error("Error parsing input");
+
+constexpr char NULL_CHAR = '\0';
+constexpr char WHITESPACE_CHAR = ' ';
+constexpr char PLUS_CHAR = '+';
+constexpr char MINUS_CHAR = '-';
+
 class Interpreter
 {
 private:
@@ -13,9 +21,19 @@ private:
     /// @brief actual code
     const std::string _text;
 
+    char _current_char;
+
     Token *_current_token = nullptr;
 
     void _error() const;
+
+    /// @brief Advance the 'pos' pointer and set the 'current_char' variable.
+    void _advance() noexcept;
+
+    void _skip_whitespace() noexcept;
+
+    /// @brief Return a (multidigit) integer string consumed from the input.
+    std::string _integer() noexcept;
 
     /// @brief Lexical analyzer (also known as scanner or tokenizer)
     ///

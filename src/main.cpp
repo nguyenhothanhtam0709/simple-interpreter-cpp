@@ -10,7 +10,7 @@ int main()
         std::string text;
 
         std::cout << "calc> ";
-        std::cin >> text;
+        std::getline(std::cin, text);
 
         Interpreter *interpreter = new Interpreter(text);
         std::cout << interpreter->expr() << '\n';
