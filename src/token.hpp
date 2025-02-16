@@ -2,19 +2,7 @@
 #define TOKEN_HPP
 
 #include <string>
-
-/// @brief Token types
-enum class TokenType
-{
-    INTEGER,
-
-    PLUS,
-    MINUS,
-
-    /// @brief EOF (end-of-file) token is used to indicate that
-    /// there is no more input left for lexical analysis
-    END_OF_FILE
-};
+#include "utils.hpp"
 
 class Token
 {
