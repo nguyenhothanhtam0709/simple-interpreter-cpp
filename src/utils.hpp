@@ -10,6 +10,8 @@ constexpr char PLUS_CHAR = '+';
 constexpr char MINUS_CHAR = '-';
 constexpr char MUL_CHAR = '*';
 constexpr char DIV_CHAR = '/';
+constexpr char LPAREN_CHAR = '(';
+constexpr char RPAREN_CHAR = ')';
 
 /// @brief Token types
 enum class TokenType
@@ -20,6 +22,8 @@ enum class TokenType
     MINUS,
     MUL,
     DIV,
+    LPAREN,
+    RPAREN,
 
     /// @brief EOF (end-of-file) token is used to indicate that
     /// there is no more input left for lexical analysis

@@ -84,6 +84,16 @@ Token *Lexer::get_next_token()
             return new Token(TokenType::DIV, DIV_CHAR);
         }
 
+        if (_current_char == LPAREN_CHAR) {
+            _advance();
+            return new Token(TokenType::LPAREN, LPAREN_CHAR);
+        }
+
+        if (_current_char == RPAREN_CHAR) {
+            _advance();
+            return new Token(TokenType::RPAREN, RPAREN_CHAR);
+        }
+
         __THROW_PARSING_ERROR
     }
 

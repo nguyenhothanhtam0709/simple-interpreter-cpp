@@ -27,7 +27,7 @@ public:
     ~Interpreter();
 
     /// @brief expr -> INTEGER PLUS INTEGER
-    int expr();
+    std::string expr();
 };
 
 #endif

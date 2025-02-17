@@ -37,10 +37,25 @@ void Interpreter::_eat(TokenType token_type)
 std::string Interpreter::_factor()
 {
     Token *token = _current_token;
-    _eat(TokenType::INTEGER);
-    std::string value = token->getValue();
-    delete token;
-    return value;
+    if (token->getType() == TokenType::INTEGER)
+    {
+        _eat(TokenType::INTEGER);
+        std::string value = token->getValue();
+        delete token;
+        return value;
+    }
+    else if (token->getType() == TokenType::LPAREN)
+    {
+        _eat(TokenType::LPAREN);
+        delete token; // delete LPAREN token pointer
+        std::string result = expr();
+        token = _current_token;
+        _eat(TokenType::RPAREN);
+        delete token; // delete RPAREN token pointer
+        return result;
+    }
+
+    __THROW_PARSING_ERROR
 }
 
 std::string Interpreter::_term()
@@ -67,7 +82,7 @@ std::string Interpreter::_term()
     return std::to_string(result);
 }
 
-int Interpreter::expr()
+std::string Interpreter::expr()
 {
     int result = std::stoi(_term());
 
@@ -90,5 +105,5 @@ int Interpreter::expr()
         delete token;
     }
 
-    return result;
+    return std::to_string(result);
 }
