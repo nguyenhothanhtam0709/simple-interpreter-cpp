@@ -20,6 +20,8 @@ private:
     /// @brief Return an INTEGER token value.
     std::string _factor();
 
+    std::string _term();
+
 public:
     Interpreter(Lexer *lexer);
     ~Interpreter();

@@ -38,35 +38,19 @@ std::string Interpreter::_factor()
 {
     Token *token = _current_token;
     _eat(TokenType::INTEGER);
-    return token->getValue();
+    std::string value = token->getValue();
+    delete token;
+    return value;
 }
 
-int Interpreter::expr()
+std::string Interpreter::_term()
 {
-    Token *first_token = _current_token;
-
     int result = std::stoi(_factor());
-    delete first_token;
-    first_token = nullptr;
-
     while (_current_token != nullptr &&
-           (_current_token->getType() == TokenType::PLUS ||
-            _current_token->getType() == TokenType::MINUS ||
-            _current_token->getType() == TokenType::MUL ||
-            _current_token->getType() == TokenType::DIV))
+           (_current_token->getType() == TokenType::MUL || _current_token->getType() == TokenType::DIV))
     {
         Token *token = _current_token;
-        if (token->getType() == TokenType::PLUS)
-        {
-            _eat(TokenType::PLUS);
-            result += std::stoi(_factor());
-        }
-        else if (token->getType() == TokenType::MINUS)
-        {
-            _eat(TokenType::MINUS);
-            result -= std::stoi(_factor());
-        }
-        else if (token->getType() == TokenType::MUL)
+        if (token->getType() == TokenType::MUL)
         {
             _eat(TokenType::MUL);
             result *= std::stoi(_factor());
@@ -75,6 +59,32 @@ int Interpreter::expr()
         {
             _eat(TokenType::DIV);
             result /= std::stoi(_factor());
+        }
+
+        delete token;
+    }
+
+    return std::to_string(result);
+}
+
+int Interpreter::expr()
+{
+    int result = std::stoi(_term());
+
+    while (_current_token != nullptr &&
+           (_current_token->getType() == TokenType::PLUS ||
+            _current_token->getType() == TokenType::MINUS))
+    {
+        Token *token = _current_token;
+        if (token->getType() == TokenType::PLUS)
+        {
+            _eat(TokenType::PLUS);
+            result += std::stoi(_term());
+        }
+        else if (token->getType() == TokenType::MINUS)
+        {
+            _eat(TokenType::MINUS);
+            result -= std::stoi(_term());
         }
 
         delete token;
