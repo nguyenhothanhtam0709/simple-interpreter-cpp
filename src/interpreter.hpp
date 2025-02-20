@@ -3,31 +3,31 @@
 
 #include <string>
 #include "token.hpp"
-#include "lexer.hpp"
+#include "parser.hpp"
 #include "utils.hpp"
+#include "ast.hpp"
 
-class Interpreter
+class ASTNodeVisitor
+{
+protected:
+    std::string _visit(ASTNode *node);
+};
+
+class ASTWalker : protected ASTNodeVisitor
+{
+protected:
+    std::string _walk(AST *ast);
+};
+
+class Interpreter : protected ASTWalker
 {
 private:
-    Token *_current_token = nullptr;
-
-    Lexer *_lexer;
-
-    void _error() const;
-
-    void _eat(TokenType token_type);
-
-    /// @brief Return an INTEGER token value.
-    std::string _factor();
-
-    std::string _term();
+    Parser *_parser;
 
 public:
-    Interpreter(Lexer *lexer);
-    ~Interpreter();
+    Interpreter(Parser *parser);
 
-    /// @brief expr -> INTEGER PLUS INTEGER
-    std::string expr();
+    std::string interpret();
 };
 
 #endif

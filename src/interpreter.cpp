@@ -1,4 +1,3 @@
-#include <iostream>
 #include <stdexcept>
 #include <cctype>
 #include <string>
@@ -7,103 +6,77 @@
 #include "lexer.hpp"
 #include "utils.hpp"
 
-Interpreter::Interpreter(Lexer *lexer) : _lexer(lexer)
+std::string ASTNodeVisitor::_visit(ASTNode *node)
 {
-    _current_token = _lexer->get_next_token();
-}
-
-Interpreter::~Interpreter()
-{
-    delete _current_token;
-}
-
-void Interpreter::_error() const
-{
-    __THROW_PARSING_ERROR
-}
-
-void Interpreter::_eat(TokenType token_type)
-{
-    if (_current_token != nullptr && _current_token->getType() == token_type)
+    switch (node->getType())
     {
-        _current_token = _lexer->get_next_token();
+    case ASTNodeType::NUMBER:
+    {
+        NumNode *num_node = dynamic_cast<NumNode *>(node);
+        return num_node->getToken()->getValue();
     }
-    else
+    case ASTNodeType::UNARY_OPERATOR:
     {
-        __THROW_PARSING_ERROR
-    }
-}
-
-std::string Interpreter::_factor()
-{
-    Token *token = _current_token;
-    if (token->getType() == TokenType::INTEGER)
-    {
-        _eat(TokenType::INTEGER);
-        std::string value = token->getValue();
-        delete token;
-        return value;
-    }
-    else if (token->getType() == TokenType::LPAREN)
-    {
-        _eat(TokenType::LPAREN);
-        delete token; // delete LPAREN token pointer
-        std::string result = expr();
-        token = _current_token;
-        _eat(TokenType::RPAREN);
-        delete token; // delete RPAREN token pointer
-        return result;
-    }
-
-    __THROW_PARSING_ERROR
-}
-
-std::string Interpreter::_term()
-{
-    int result = std::stoi(_factor());
-    while (_current_token != nullptr &&
-           (_current_token->getType() == TokenType::MUL || _current_token->getType() == TokenType::DIV))
-    {
-        Token *token = _current_token;
-        if (token->getType() == TokenType::MUL)
-        {
-            _eat(TokenType::MUL);
-            result *= std::stoi(_factor());
-        }
-        else if (token->getType() == TokenType::DIV)
-        {
-            _eat(TokenType::DIV);
-            result /= std::stoi(_factor());
-        }
-
-        delete token;
-    }
-
-    return std::to_string(result);
-}
-
-std::string Interpreter::expr()
-{
-    int result = std::stoi(_term());
-
-    while (_current_token != nullptr &&
-           (_current_token->getType() == TokenType::PLUS ||
-            _current_token->getType() == TokenType::MINUS))
-    {
-        Token *token = _current_token;
+        UnaryOpNode *unary_op_node = dynamic_cast<UnaryOpNode *>(node);
+        Token *token = unary_op_node->getToken();
         if (token->getType() == TokenType::PLUS)
         {
-            _eat(TokenType::PLUS);
-            result += std::stoi(_term());
+            return _visit(unary_op_node->getChild());
         }
         else if (token->getType() == TokenType::MINUS)
         {
-            _eat(TokenType::MINUS);
-            result -= std::stoi(_term());
+            return std::to_string(-std::stoi(_visit(unary_op_node->getChild())));
         }
 
-        delete token;
+        __THROW_INVALID_AST_NODE_ERROR
     }
+    case ASTNodeType::BINARY_OPERATOR:
+    {
+        BinOpNode *bin_op_node = dynamic_cast<BinOpNode *>(node);
+        switch (bin_op_node->getToken()->getType())
+        {
+        case TokenType::PLUS:
+        {
+            return std::to_string(
+                std::stoi(_visit(bin_op_node->getLeftChild())) + std::stoi(_visit(bin_op_node->getRightChild())));
+        }
+        case TokenType::MINUS:
+        {
+            return std::to_string(
+                std::stoi(_visit(bin_op_node->getLeftChild())) - std::stoi(_visit(bin_op_node->getRightChild())));
+        }
+        case TokenType::MUL:
+        {
+            return std::to_string(
+                std::stoi(_visit(bin_op_node->getLeftChild())) * std::stoi(_visit(bin_op_node->getRightChild())));
+        }
+        case TokenType::DIV:
+        {
+            return std::to_string(
+                std::stoi(_visit(bin_op_node->getLeftChild())) / std::stoi(_visit(bin_op_node->getRightChild())));
+        }
+        default:
+            __THROW_INVALID_AST_NODE_ERROR
+        }
+    }
+    default:
+        __THROW_INVALID_AST_NODE_ERROR
+    }
+}
 
-    return std::to_string(result);
+std::string ASTWalker::_walk(AST *ast)
+{
+    return _visit(ast->getRoot());
+}
+
+Interpreter::Interpreter(Parser *parser) : _parser(parser)
+{
+}
+
+std::string Interpreter::interpret()
+{
+    AST *ast = _parser->parse();
+    std::string result = _walk(ast);
+    delete ast;
+    return result;
 }
