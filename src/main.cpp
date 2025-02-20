@@ -1,6 +1,8 @@
 #include <cstdlib>
 #include <iostream>
 #include <string>
+#include "ast.hpp"
+#include "parser.hpp"
 #include "interpreter.hpp"
 
 int main()
@@ -13,10 +15,12 @@ int main()
         std::getline(std::cin, text);
 
         Lexer *lexer = new Lexer(text);
-        Interpreter *interpreter = new Interpreter(lexer);
-        std::cout << interpreter->expr() << '\n';
+        Parser *parser = new Parser(lexer);
+        Interpreter *interpreter = new Interpreter(parser);
+        std::cout << interpreter->interpret() << '\n';
 
         delete interpreter;
+        delete parser;
         delete lexer;
     }
 

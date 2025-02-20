@@ -4,6 +4,9 @@
 #define __THROW_PARSING_ERROR \
     throw std::runtime_error("Error parsing input");
 
+#define __THROW_INVALID_AST_NODE_ERROR \
+    throw std::runtime_error("Invalid AST node");
+
 constexpr char NULL_CHAR = '\0';
 constexpr char WHITESPACE_CHAR = ' ';
 constexpr char PLUS_CHAR = '+';
@@ -14,7 +17,7 @@ constexpr char LPAREN_CHAR = '(';
 constexpr char RPAREN_CHAR = ')';
 
 /// @brief Token types
-enum class TokenType
+enum class TokenType : unsigned char
 {
     INTEGER,
 
