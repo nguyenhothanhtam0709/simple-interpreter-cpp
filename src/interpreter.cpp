@@ -12,12 +12,16 @@ std::string ASTNodeVisitor::_visit(ASTNode *node)
     {
     case ASTNodeType::NUMBER:
     {
-        NumNode *num_node = dynamic_cast<NumNode *>(node);
+        /// @note Using static_cast to prevent runtime checking for better performance.
+        /// If you want your program to be safer, please use dynamic_cast.
+        NumNode *num_node = static_cast<NumNode *>(node);
         return num_node->getToken()->getValue();
     }
     case ASTNodeType::UNARY_OPERATOR:
     {
-        UnaryOpNode *unary_op_node = dynamic_cast<UnaryOpNode *>(node);
+        /// @note Using static_cast to prevent runtime checking for better performance.
+        /// If you want your program to be safer, please use dynamic_cast.
+        UnaryOpNode *unary_op_node = static_cast<UnaryOpNode *>(node);
         Token *token = unary_op_node->getToken();
         if (token->getType() == TokenType::PLUS)
         {
@@ -32,7 +36,9 @@ std::string ASTNodeVisitor::_visit(ASTNode *node)
     }
     case ASTNodeType::BINARY_OPERATOR:
     {
-        BinOpNode *bin_op_node = dynamic_cast<BinOpNode *>(node);
+        /// @note Using static_cast to prevent runtime checking for better performance.
+        /// If you want your program to be safer, please use dynamic_cast.
+        BinOpNode *bin_op_node = static_cast<BinOpNode *>(node);
         switch (bin_op_node->getToken()->getType())
         {
         case TokenType::PLUS:
