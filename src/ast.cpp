@@ -83,13 +83,17 @@ AST::~AST()
         }
         case ASTNodeType::UNARY_OPERATOR:
         {
-            UnaryOpNode *unary_op_node = dynamic_cast<UnaryOpNode *>(current_node);
+            /// @note Using static_cast to prevent runtime checking for better performance.
+            /// If you want your program to be safer, please use dynamic_cast.
+            UnaryOpNode *unary_op_node = static_cast<UnaryOpNode *>(current_node);
             nodes.emplace(unary_op_node->getChild());
             break;
         }
         case ASTNodeType::BINARY_OPERATOR:
         {
-            BinOpNode *bin_op_node = dynamic_cast<BinOpNode *>(current_node);
+            /// @note Using static_cast to prevent runtime checking for better performance.
+            /// If you want your program to be safer, please use dynamic_cast.
+            BinOpNode *bin_op_node = static_cast<BinOpNode *>(current_node);
             nodes.emplace(bin_op_node->getLeftChild());
             nodes.emplace(bin_op_node->getRightChild());
             break;
