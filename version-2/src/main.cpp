@@ -1,6 +1,6 @@
 #include <cstdlib>
 #include <iostream>
-#include "interpreter/token.hpp"
+#include "token.hpp"
 
 int main()
 {

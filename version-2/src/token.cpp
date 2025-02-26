@@ -4,6 +4,8 @@
 #include <unordered_map>
 
 Token::Token(TokenType type) : type_(type) {}
+Token::Token(const Token &token) : type_(token.get_type()) {}
+Token::~Token() {}
 
 TokenType Token::get_type() const noexcept
 {
@@ -14,19 +16,47 @@ std::ostream &operator<<(std::ostream &out_stream, const Token &token)
 {
     return out_stream << "Token: " << map_token_type_to_string(token.get_type());
 }
+Token &Token::operator=(const Token &rhs)
+{
+    if (this != &rhs)
+    {
+        type_ = rhs.get_type();
+    }
 
-static const std::unordered_map<std::string, Token> kReversedKeywordTokenMap = {
-    {BEGIN_KEYWORD, Token(TokenType::BEGIN)},
-    {"END", Token(TokenType::END)},
-    {"PROGRAM", Token(TokenType::PROGRAM)},
-    {"VAR", Token(TokenType::VAR)},
-    {"INTEGER", Token(TokenType::INTEGER)}};
+    return *this;
+}
+
+IdToken::IdToken(const std::string &value) : Token(TokenType::ID), value_(value) {}
+IdToken::IdToken(std::string &&value) : Token(TokenType::ID), value_(std::move(value)) {}
+
+const std::string &IdToken::get_value() const noexcept
+{
+    return value_;
+}
+std::ostream &operator<<(std::ostream &out_stream, const IdToken &token)
+{
+    return out_stream << "Token: " << map_token_type_to_string(token.get_type()) << "(" << token.get_value() << ")";
+}
+
+IntToken::IntToken(int value) : Token(TokenType::INTEGER_CONST), value_{value} {}
+int IntToken::get_value() const noexcept { return value_; }
+std::ostream &operator<<(std::ostream &out_stream, const IntToken &token)
+{
+    return out_stream << "Token: " << map_token_type_to_string(token.get_type()) << "(" << token.get_value() << ")";
+}
+
+RealToken::RealToken(float value) : Token(TokenType::REAL_CONST), value_{value} {}
+int RealToken::get_value() const noexcept { return value_; }
+std::ostream &operator<<(std::ostream &out_stream, const RealToken &token)
+{
+    return out_stream << "Token: " << map_token_type_to_string(token.get_type()) << "(" << token.get_value() << ")";
+}
 
 /// @brief Mapping TokenType to string
 /// @warning This function is not thread-safe since the std::unordered_map is not thread-safe.
 static const std::string &map_token_type_to_string(const TokenType &token_type)
 {
-    static const std::unordered_map<TokenType, std::string> kTokenStrMap = {
+    static const std::unordered_map<TokenType, const std::string> kTokenStrMap = {
         {TokenType::BEGIN, "BEGIN"},
         {TokenType::END, "END"},
         {TokenType::PROGRAM, "PROGRAM"},

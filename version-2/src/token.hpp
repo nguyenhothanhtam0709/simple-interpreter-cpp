@@ -3,7 +3,9 @@
 
 #include <ostream>
 #include <string>
+#include <string_view>
 
+/// @brief Present None character
 constexpr char kNull = '\0';
 constexpr char kWhitespace = ' ';
 constexpr char kPlus = '+';
@@ -19,13 +21,6 @@ constexpr char kLeftCurlyBrace = '{';
 constexpr char kRightCurlyBrace = '}';
 constexpr char kLParen = '(';
 constexpr char kRParen = ')';
-
-constexpr const char *kBegin = "BEGIN";
-constexpr const char *kEnd = "END";
-constexpr const char *kProgram = "PROGRAM";
-constexpr const char *kVar = "VAR";
-constexpr const char *kInteger = "INTEGER";
-constexpr const char *kReal = "REAL";
 
 /// @brief Token types
 enum class TokenType : unsigned char
@@ -72,15 +67,60 @@ class Token
 {
 public:
     explicit Token(TokenType type);
+    Token(const Token &token); // copy constructor
+
+    virtual ~Token();
 
     /// @brief Retrieve the type of the token
     TokenType get_type() const noexcept;
+
     /// @note The overloaded << operator function must then be declared as a friend of class Token
     /// so it can access the private data within a Token object
     friend std::ostream &operator<<(std::ostream &os, const Token &token);
+    Token &operator=(const Token &rhs); // Copy assignment operator
 
 protected:
     TokenType type_;
+};
+
+class IdToken : public Token
+{
+public:
+    explicit IdToken(const std::string &value);
+    explicit IdToken(std::string &&value);
+
+    const std::string &get_value() const noexcept;
+
+    friend std::ostream &operator<<(std::ostream &os, const IdToken &token);
+
+protected:
+    std::string value_;
+};
+
+class IntToken : public Token
+{
+public:
+    explicit IntToken(int value);
+
+    int get_value() const noexcept;
+
+    friend std::ostream &operator<<(std::ostream &os, const IntToken &token);
+
+protected:
+    int value_;
+};
+
+class RealToken : public Token
+{
+public:
+    explicit RealToken(float value);
+
+    int get_value() const noexcept;
+
+    friend std::ostream &operator<<(std::ostream &os, const RealToken &token);
+
+protected:
+    float value_;
 };
 
 #endif
