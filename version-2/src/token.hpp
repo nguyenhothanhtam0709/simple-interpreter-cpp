@@ -69,8 +69,6 @@ public:
     explicit Token(TokenType type);
     Token(const Token &token); // copy constructor
 
-    virtual ~Token();
-
     /// @brief Retrieve the type of the token
     TokenType get_type() const noexcept;
 

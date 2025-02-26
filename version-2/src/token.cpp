@@ -5,7 +5,6 @@
 
 Token::Token(TokenType type) : type_(type) {}
 Token::Token(const Token &token) : type_(token.get_type()) {}
-Token::~Token() {}
 
 TokenType Token::get_type() const noexcept
 {
