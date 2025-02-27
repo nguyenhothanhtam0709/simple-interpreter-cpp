@@ -30,8 +30,8 @@ term                    : factor ((MUL | INTEGER_DIV | FLOAT_DIV) factor)*
 
 factor                  : PLUS factor
                         | MINUS factor
-                        | INTEGER_CONST
-                        | FLOAT_CONST
+                        | INTEGER_NUMBER
+                        | REAL_NUMBER
                         | LPAREN expr RPAREN
                         | variable
 
