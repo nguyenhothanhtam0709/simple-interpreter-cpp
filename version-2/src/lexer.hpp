@@ -4,8 +4,8 @@
 #include <string>
 #include "token.hpp"
 
-#define __THROW_PARSING_ERROR \
-    throw std::runtime_error("Error parsing input");
+#define __THROW_TOKENIZING_ERROR \
+    throw std::runtime_error("Error tokenizing input");
 
 /// @brief Lexical analyzer (also known as scanner or tokenizer)
 class Lexer

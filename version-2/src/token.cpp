@@ -37,16 +37,16 @@ std::ostream &operator<<(std::ostream &out_stream, const IdToken &token)
     return out_stream << "Token: " << map_token_type_to_string(token.get_type()) << "(" << token.get_value() << ")";
 }
 
-IntToken::IntToken(int value) : Token(TokenType::INTEGER_CONST), value_{value} {}
-int IntToken::get_value() const noexcept { return value_; }
-std::ostream &operator<<(std::ostream &out_stream, const IntToken &token)
+IntNumToken::IntNumToken(int value) : Token(TokenType::INTEGER_NUMBER), value_{value} {}
+int IntNumToken::get_value() const noexcept { return value_; }
+std::ostream &operator<<(std::ostream &out_stream, const IntNumToken &token)
 {
     return out_stream << "Token: " << map_token_type_to_string(token.get_type()) << "(" << token.get_value() << ")";
 }
 
-RealToken::RealToken(float value) : Token(TokenType::REAL_CONST), value_{value} {}
-int RealToken::get_value() const noexcept { return value_; }
-std::ostream &operator<<(std::ostream &out_stream, const RealToken &token)
+RealNumToken::RealNumToken(float value) : Token(TokenType::REAL_NUMBER), value_{value} {}
+float RealNumToken::get_value() const noexcept { return value_; }
+std::ostream &operator<<(std::ostream &out_stream, const RealNumToken &token)
 {
     return out_stream << "Token: " << map_token_type_to_string(token.get_type()) << "(" << token.get_value() << ")";
 }
@@ -78,8 +78,8 @@ static const std::string &map_token_type_to_string(const TokenType &token_type)
         {TokenType::RPAREN, "RPAREN"},
 
         {TokenType::ID, "ID"},
-        {TokenType::INTEGER_CONST, "INTEGER_CONST"},
-        {TokenType::REAL_CONST, "REAL_CONST"},
+        {TokenType::INTEGER_NUMBER, "INTEGER_NUMBER"},
+        {TokenType::REAL_NUMBER, "REAL_NUMBER"},
 
         {TokenType::END_OF_FILE, "END_OF_FILE"}};
     /// @note Persisting static string to prevent potential dangling reference error

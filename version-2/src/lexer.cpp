@@ -9,7 +9,8 @@ static const std::unordered_map<std::string, Token> kReversedKeywordTokenMap = {
     {"PROGRAM", Token(TokenType::PROGRAM)},
     {"VAR", Token(TokenType::VAR)},
     {"INTEGER", Token(TokenType::INTEGER)},
-    {"REAL", Token(TokenType::REAL)}};
+    {"REAL", Token(TokenType::REAL)},
+    {"DIV", Token(TokenType::INTEGER_DIV)}};
 
 /// @note This constructor make a copy of code
 Lexer::Lexer(const std::string &code) : code_{code}, current_char_{code_[pos_]} {}
@@ -80,10 +81,10 @@ Token *Lexer::number() noexcept
             advance();
         }
 
-        return new RealToken(std::stof(result));
+        return new RealNumToken(std::stof(result));
     }
 
-    return new IntToken(std::stoi(result));
+    return new IntNumToken(std::stoi(result));
 }
 
 Token *Lexer::get_next_token()
@@ -179,7 +180,7 @@ Token *Lexer::get_next_token()
             return new Token(TokenType::COMMA);
         }
 
-        __THROW_PARSING_ERROR
+        __THROW_TOKENIZING_ERROR
     }
 
     return new Token(TokenType::END_OF_FILE);

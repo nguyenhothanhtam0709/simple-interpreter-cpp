@@ -53,8 +53,8 @@ enum class TokenType : unsigned char
     RPAREN,
 
     ID,
-    INTEGER_CONST,
-    REAL_CONST,
+    INTEGER_NUMBER,
+    REAL_NUMBER,
 
     /// @brief EOF (end-of-file) token is used to indicate that
     /// there is no more input left for lexical analysis
@@ -95,27 +95,27 @@ protected:
     std::string value_;
 };
 
-class IntToken : public Token
+class IntNumToken : public Token
 {
 public:
-    explicit IntToken(int value);
+    explicit IntNumToken(int value);
 
     int get_value() const noexcept;
 
-    friend std::ostream &operator<<(std::ostream &os, const IntToken &token);
+    friend std::ostream &operator<<(std::ostream &os, const IntNumToken &token);
 
 protected:
     int value_;
 };
 
-class RealToken : public Token
+class RealNumToken : public Token
 {
 public:
-    explicit RealToken(float value);
+    explicit RealNumToken(float value);
 
-    int get_value() const noexcept;
+    float get_value() const noexcept;
 
-    friend std::ostream &operator<<(std::ostream &os, const RealToken &token);
+    friend std::ostream &operator<<(std::ostream &os, const RealNumToken &token);
 
 protected:
     float value_;
