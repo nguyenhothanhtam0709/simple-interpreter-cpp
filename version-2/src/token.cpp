@@ -53,7 +53,7 @@ std::ostream &operator<<(std::ostream &out_stream, const RealNumToken &token)
 
 /// @brief Mapping TokenType to string
 /// @warning This function is not thread-safe since the std::unordered_map is not thread-safe.
-static const std::string &map_token_type_to_string(const TokenType &token_type)
+const std::string &map_token_type_to_string(const TokenType &token_type)
 {
     static const std::unordered_map<TokenType, const std::string> kTokenStrMap = {
         {TokenType::BEGIN, "BEGIN"},

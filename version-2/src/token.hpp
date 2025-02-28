@@ -61,7 +61,7 @@ enum class TokenType : unsigned char
     END_OF_FILE
 };
 
-static const std::string &map_token_type_to_string(const TokenType &token_type);
+const std::string &map_token_type_to_string(const TokenType &token_type);
 
 class Token
 {

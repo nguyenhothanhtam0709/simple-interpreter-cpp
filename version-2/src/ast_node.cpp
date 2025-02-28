@@ -72,3 +72,25 @@ IntNumToken *IntNumNode::get_token() const noexcept { return token_; }
 RealNumNode::RealNumNode(RealNumToken *token) : AstNode{AstNodeType::REAL_NUM}, token_{token} {}
 RealNumNode::~RealNumNode() { delete token_; }
 RealNumToken *RealNumNode::get_token() const noexcept { return token_; }
+
+const std::string &map_ast_node_type_to_string(AstNodeType type)
+{
+    static const std::unordered_map<AstNodeType, std::string> typeToString = {
+        {AstNodeType::PROGRAM, "PROGRAM"},
+        {AstNodeType::BLOCK, "BLOCK"},
+        {AstNodeType::COMPOUND_STATEMENT, "COMPOUND_STATEMENT"},
+        {AstNodeType::VARIABLE_DECLARATION, "VARIABLE_DECLARATION"},
+        {AstNodeType::ASSIGNMENT_STATEMENT, "ASSIGNMENT_STATEMENT"},
+        {AstNodeType::BINARY_OPERATOR, "BINARY_OPERATOR"},
+        {AstNodeType::UNARY_OPERATOR, "UNARY_OPERATOR"},
+        {AstNodeType::VARIABLE, "VARIABLE"},
+        {AstNodeType::TYPE, "TYPE"},
+        {AstNodeType::INT_NUM, "INT_NUM"},
+        {AstNodeType::REAL_NUM, "REAL_NUM"},
+        {AstNodeType::NO_OPERATION, "NO_OPERATION"}};
+
+    static const std::string unknown = "UNKNOWN AST NODE";
+
+    auto it = typeToString.find(type);
+    return (it != typeToString.end()) ? it->second : unknown;
+}

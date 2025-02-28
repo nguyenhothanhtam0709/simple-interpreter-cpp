@@ -217,4 +217,6 @@ protected:
     RealNumToken *token_;
 };
 
+const std::string &map_ast_node_type_to_string(AstNodeType type);
+
 #endif
