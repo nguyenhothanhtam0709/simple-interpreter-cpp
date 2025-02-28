@@ -68,6 +68,7 @@ class TypeNode : public AstNode
 {
 public:
     TypeNode(Token *token);
+    TypeNode(const TypeNode &node);
     ~TypeNode();
 
     /// @brief Get token belong to this node
@@ -75,7 +76,7 @@ public:
 
 protected:
     /// @brief token containing type
-    Token *token_;
+    Token *token_ = nullptr;
 };
 
 class CompoundStatementNode : public AstNode

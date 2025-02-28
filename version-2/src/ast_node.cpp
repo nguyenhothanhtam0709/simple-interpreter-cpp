@@ -19,6 +19,8 @@ VariableNode::VariableNode(std::string &&name) : AstNode{AstNodeType::VARIABLE},
 const std::string &VariableNode::get_name() const noexcept { return name_; }
 
 TypeNode::TypeNode(Token *token) : AstNode{AstNodeType::TYPE}, token_{token} {}
+TypeNode::TypeNode(const TypeNode &node)
+    : AstNode{AstNodeType::TYPE}, token_{new Token(*(node.get_token()))} {}
 TypeNode::~TypeNode() { delete token_; }
 Token *TypeNode::get_token() const noexcept { return token_; }
 
