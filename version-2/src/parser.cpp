@@ -74,7 +74,7 @@ std::vector<VarDeclNode *> Parser::_variable_declaration()
     std::string id_node_name = std::string((static_cast<IdToken *>(id_token))->get_value());
     delete id_token;
 
-    std::vector<VariableNode *> var_nodes = {new VariableNode(id_node_name)};
+    std::vector<VariableNode *> var_nodes = {new VariableNode(std::move(id_node_name))};
     while (current_token_->get_type() != TokenType::COLON)
     {
         eat_and_ignore(TokenType::COMMA);
@@ -85,7 +85,7 @@ std::vector<VarDeclNode *> Parser::_variable_declaration()
         std::string id_node_name = std::string((static_cast<IdToken *>(id_token))->get_value());
         delete id_token;
 
-        var_nodes.push_back(new VariableNode(id_node_name));
+        var_nodes.push_back(new VariableNode(std::move(id_node_name)));
     }
 
     eat_and_ignore(TokenType::COLON);
@@ -158,9 +158,130 @@ AstNode *Parser::_statement()
     }
 }
 
+AssignmentStatementNode *Parser::_assignment_statement()
+{
+    VariableNode *var_node = _variable();
+
+    eat_and_ignore(TokenType::ASSIGN);
+
+    AstNode *expr_node = _expr();
+
+    return new AssignmentStatementNode(var_node, expr_node);
+}
+
 NoOperationNode *Parser::_empty()
 {
     return new NoOperationNode();
+}
+
+AstNode *Parser::_expr()
+{
+    AstNode *node = _term();
+    while (current_token_ != nullptr &&
+           (current_token_->get_type() == TokenType::PLUS ||
+            current_token_->get_type() == TokenType::MINUS))
+    {
+        Token *op_token = current_token_;
+        if (op_token->get_type() == TokenType::PLUS)
+        {
+            eat(TokenType::PLUS);
+        }
+        else
+        {
+            eat(TokenType::MINUS);
+        }
+
+        node = new BinaryOperatorNode(op_token, node, _term());
+    }
+    return node;
+}
+
+AstNode *Parser::_term()
+{
+    AstNode *node = _factor();
+
+    while (current_token_ != nullptr &&
+           (current_token_->get_type() == TokenType::MUL ||
+            current_token_->get_type() == TokenType::INTEGER_DIV ||
+            current_token_->get_type() == TokenType::FLOAT_DIV))
+    {
+        Token *op_token = current_token_;
+        if (op_token->get_type() == TokenType::MUL)
+        {
+            eat(TokenType::MUL);
+        }
+        else if (op_token->get_type() == TokenType::INTEGER_DIV)
+        {
+            eat(TokenType::INTEGER_DIV);
+        }
+        else
+        {
+            eat(TokenType::FLOAT_DIV);
+        }
+
+        node = new BinaryOperatorNode(op_token, node, _factor());
+    }
+
+    return node;
+}
+
+AstNode *Parser::_factor()
+{
+    Token *token = current_token_;
+    switch (token->get_type())
+    {
+    case TokenType::PLUS:
+    {
+        eat(TokenType::PLUS);
+        return new UnaryOperatorNode(token, _factor());
+    }
+    case TokenType::MINUS:
+    {
+        eat(TokenType::MINUS);
+        return new UnaryOperatorNode(token, _factor());
+    }
+    case TokenType::INTEGER_NUMBER:
+    {
+        eat(TokenType::INTEGER_NUMBER);
+        return new IntNumNode(static_cast<IntNumToken *>(token));
+    }
+    case TokenType::REAL_NUMBER:
+    {
+        eat(TokenType::REAL_NUMBER);
+        return new RealNumNode(static_cast<RealNumToken *>(token));
+    }
+    case TokenType::LPAREN:
+    {
+        eat(TokenType::LPAREN);
+        delete token; // delete LPAREN token pointer
+
+        AstNode *node = _expr();
+
+        token = current_token_;
+        eat(TokenType::RPAREN);
+        delete token; // delete RPAREN token pointer
+
+        return node;
+    }
+    case TokenType::ID:
+    {
+        return _variable();
+    }
+    default:
+    {
+        __THROW_PARSING_ERROR
+    }
+    }
+}
+
+VariableNode *Parser::_variable()
+{
+    Token *id_token = current_token_;
+    eat(TokenType::ID);
+    /// @note make a copy to prevent potential Use-After-Free
+    std::string id_node_name = std::string((static_cast<IdToken *>(id_token))->get_value());
+    delete id_token;
+    return new VariableNode(std::move(id_node_name));
 }
 
 void Parser::eat_and_ignore(const TokenType &token_type)

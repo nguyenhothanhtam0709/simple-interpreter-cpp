@@ -156,6 +156,7 @@ public:
 
 class BinaryOperatorNode : public AstNode
 {
+public:
     BinaryOperatorNode(Token *token, AstNode *lhs, AstNode *rhs);
     ~BinaryOperatorNode();
 
@@ -173,6 +174,7 @@ protected:
 
 class UnaryOperatorNode : public AstNode
 {
+public:
     UnaryOperatorNode(Token *token, AstNode *rhs);
     ~UnaryOperatorNode();
 

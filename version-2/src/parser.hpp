@@ -86,9 +86,38 @@ private:
 
     /// @brief Handle empty node
     /// @note ```ebnf
-    /// empty : 
+    /// empty :
     /// ```
-    NoOperationNode* _empty();
+    NoOperationNode *_empty();
+
+    /// @brief Handle expr node
+    /// @note ```ebnf
+    /// expr : term ((PLUS | MINUS) term)*
+    /// ```
+    AstNode *_expr();
+
+    /// @brief Handle expr node
+    /// @note ```ebnf
+    /// term : factor ((MUL | INTEGER_DIV | FLOAT_DIV) factor)*
+    /// ```
+    AstNode *_term();
+
+    /// @brief Handle factor node
+    /// @note ```ebnf
+    /// factor : PLUS factor
+    ///        | MINUS factor
+    ///        | INTEGER_NUMBER
+    ///        | REAL_NUMBER
+    ///        | LPAREN expr RPAREN
+    ///        | variable
+    /// ```
+    AstNode *_factor();
+
+    /// @brief Handle variable node
+    /// @note ```ebnf
+    /// variable : ID
+    /// ```
+    VariableNode *_variable();
 
     /// @brief Eat the current token without adding to AST
     void eat_and_ignore(const TokenType &token_type);
