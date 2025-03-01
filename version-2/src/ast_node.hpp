@@ -60,8 +60,8 @@ protected:
 class VariableNode : public AstNode
 {
 public:
-    VariableNode(const std::string &name);
-    VariableNode(std::string &&name);
+    explicit VariableNode(const std::string &name);
+    explicit VariableNode(std::string &&name);
 
     /// @brief Get variable name
     const std::string &get_name() const noexcept;
@@ -74,16 +74,8 @@ protected:
 class TypeNode : public TokenHolderNode<Token>
 {
 public:
-    TypeNode(Token *token);
+    explicit TypeNode(Token *token);
     TypeNode(const TypeNode &node);
-    //     ~TypeNode();
-
-    //     /// @brief Get token belong to this node
-    //     Token *get_token() const noexcept;
-
-    // protected:
-    //     /// @brief token containing type
-    //     Token *token_ = nullptr;
 };
 
 class CompoundStatementNode : public AstNode
@@ -166,16 +158,11 @@ class BinaryOperatorNode : public TokenHolderNode<Token>
 {
 public:
     BinaryOperatorNode(Token *token, AstNode *lhs, AstNode *rhs);
-    // ~BinaryOperatorNode();
 
-    // /// @brief Get token belong to this node
-    // Token *get_token() const noexcept;
     AstNode *get_lhs() const noexcept;
     AstNode *get_rhs() const noexcept;
 
 protected:
-    // /// @brief token containing operator
-    // Token *token_;
     AstNode *lhs_;
     AstNode *rhs_;
 };
@@ -184,44 +171,23 @@ class UnaryOperatorNode : public TokenHolderNode<Token>
 {
 public:
     UnaryOperatorNode(Token *token, AstNode *rhs);
-    // ~UnaryOperatorNode();
 
-    // /// @brief Get token belong to this node
-    // Token *get_token() const noexcept;
     AstNode *get_rhs() const noexcept;
 
 protected:
-    // /// @brief token containing operator
-    // Token *token_;
     AstNode *rhs_;
 };
 
 class IntNumNode : public TokenHolderNode<IntNumToken>
 {
 public:
-    IntNumNode(IntNumToken *token);
-    // ~IntNumNode();
-
-    // /// @brief Get token belong to this node
-    // IntNumToken *get_token() const noexcept;
-
-    // protected:
-    // /// @brief token containing integer number
-    // IntNumToken *token_;
+    explicit IntNumNode(IntNumToken *token);
 };
 
 class RealNumNode : public TokenHolderNode<RealNumToken>
 {
 public:
-    RealNumNode(RealNumToken *token);
-    // ~RealNumNode();
-
-    // /// @brief Get token belong to this node
-    // RealNumToken *get_token() const noexcept;
-
-    // protected:
-    // /// @brief token containing real number
-    // RealNumToken *token_;
+    explicit RealNumNode(RealNumToken *token);
 };
 
 const std::string &map_ast_node_type_to_string(AstNodeType type);
