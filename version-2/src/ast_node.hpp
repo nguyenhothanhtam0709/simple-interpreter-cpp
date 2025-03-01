@@ -36,15 +36,22 @@ protected:
 };
 
 /// @brief AST node containing a token
-template <typename TToken = Token>
+/// @note Since *TokenHolderNode* is a templated class, the compiler does not generate code for it
+/// until it is instantiated with a specific type (*IntNumToken* in this case).
+/// If the member functions are only declared in the header but defined in a separate .cpp file,
+/// the linker will not find the instantiation when it tries to resolve *get_token()*.
+///
+/// To fix this, the implementation must be included in the same translation unit where the class template is used.
+/// This is why template definitions are usually placed in header files.
+template <typename TToken>
 class TokenHolderNode : public AstNode
 {
 public:
-    TokenHolderNode(AstNodeType type, TToken *token);
-    virtual ~TokenHolderNode();
+    TokenHolderNode(AstNodeType type, TToken *token) : AstNode{type}, token_{token} {}
+    virtual ~TokenHolderNode() { delete token_; }
 
     /// @brief Get token belong to this node
-    TToken *get_token() const noexcept;
+    TToken *get_token() const noexcept { return token_; }
 
 protected:
     TToken *token_;
@@ -64,19 +71,19 @@ protected:
     std::string name_;
 };
 
-class TypeNode : public AstNode
+class TypeNode : public TokenHolderNode<Token>
 {
 public:
     TypeNode(Token *token);
     TypeNode(const TypeNode &node);
-    ~TypeNode();
+    //     ~TypeNode();
 
-    /// @brief Get token belong to this node
-    Token *get_token() const noexcept;
+    //     /// @brief Get token belong to this node
+    //     Token *get_token() const noexcept;
 
-protected:
-    /// @brief token containing type
-    Token *token_ = nullptr;
+    // protected:
+    //     /// @brief token containing type
+    //     Token *token_ = nullptr;
 };
 
 class CompoundStatementNode : public AstNode
@@ -155,66 +162,66 @@ public:
     NoOperationNode();
 };
 
-class BinaryOperatorNode : public AstNode
+class BinaryOperatorNode : public TokenHolderNode<Token>
 {
 public:
     BinaryOperatorNode(Token *token, AstNode *lhs, AstNode *rhs);
-    ~BinaryOperatorNode();
+    // ~BinaryOperatorNode();
 
-    /// @brief Get token belong to this node
-    Token *get_token() const noexcept;
+    // /// @brief Get token belong to this node
+    // Token *get_token() const noexcept;
     AstNode *get_lhs() const noexcept;
     AstNode *get_rhs() const noexcept;
 
 protected:
-    /// @brief token containing operator
-    Token *token_;
+    // /// @brief token containing operator
+    // Token *token_;
     AstNode *lhs_;
     AstNode *rhs_;
 };
 
-class UnaryOperatorNode : public AstNode
+class UnaryOperatorNode : public TokenHolderNode<Token>
 {
 public:
     UnaryOperatorNode(Token *token, AstNode *rhs);
-    ~UnaryOperatorNode();
+    // ~UnaryOperatorNode();
 
-    /// @brief Get token belong to this node
-    Token *get_token() const noexcept;
+    // /// @brief Get token belong to this node
+    // Token *get_token() const noexcept;
     AstNode *get_rhs() const noexcept;
 
 protected:
-    /// @brief token containing operator
-    Token *token_;
+    // /// @brief token containing operator
+    // Token *token_;
     AstNode *rhs_;
 };
 
-class IntNumNode : public AstNode
+class IntNumNode : public TokenHolderNode<IntNumToken>
 {
 public:
     IntNumNode(IntNumToken *token);
-    ~IntNumNode();
+    // ~IntNumNode();
 
-    /// @brief Get token belong to this node
-    IntNumToken *get_token() const noexcept;
+    // /// @brief Get token belong to this node
+    // IntNumToken *get_token() const noexcept;
 
-protected:
-    /// @brief token containing integer number
-    IntNumToken *token_;
+    // protected:
+    // /// @brief token containing integer number
+    // IntNumToken *token_;
 };
 
-class RealNumNode : public AstNode
+class RealNumNode : public TokenHolderNode<RealNumToken>
 {
 public:
     RealNumNode(RealNumToken *token);
-    ~RealNumNode();
+    // ~RealNumNode();
 
-    /// @brief Get token belong to this node
-    RealNumToken *get_token() const noexcept;
+    // /// @brief Get token belong to this node
+    // RealNumToken *get_token() const noexcept;
 
-protected:
-    /// @brief token containing real number
-    RealNumToken *token_;
+    // protected:
+    // /// @brief token containing real number
+    // RealNumToken *token_;
 };
 
 const std::string &map_ast_node_type_to_string(AstNodeType type);

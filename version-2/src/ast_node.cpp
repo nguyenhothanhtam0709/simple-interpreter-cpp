@@ -7,22 +7,18 @@ AstNode::AstNode(AstNodeType type) : type_{type} {}
 AstNode::~AstNode() {}
 AstNodeType AstNode::get_type() const noexcept { return type_; }
 
-template <typename TToken>
-TokenHolderNode<TToken>::TokenHolderNode(AstNodeType type, TToken *token) : AstNode{type}, token_{token} {}
-template <typename TToken>
-TokenHolderNode<TToken>::~TokenHolderNode() { delete token_; };
-template <typename TToken>
-TToken *TokenHolderNode<TToken>::get_token() const noexcept { return token_; }
-
 VariableNode::VariableNode(const std::string &name) : AstNode{AstNodeType::VARIABLE}, name_{name} {}
 VariableNode::VariableNode(std::string &&name) : AstNode{AstNodeType::VARIABLE}, name_{std::move(name)} {}
 const std::string &VariableNode::get_name() const noexcept { return name_; }
 
-TypeNode::TypeNode(Token *token) : AstNode{AstNodeType::TYPE}, token_{token} {}
+// TypeNode::TypeNode(Token *token) : AstNode{AstNodeType::TYPE}, token_{token} {}
+// TypeNode::TypeNode(const TypeNode &node)
+//     : AstNode{AstNodeType::TYPE}, token_{new Token(*(node.get_token()))} {}
+TypeNode::TypeNode(Token *token) : TokenHolderNode{AstNodeType::TYPE, token} {}
 TypeNode::TypeNode(const TypeNode &node)
-    : AstNode{AstNodeType::TYPE}, token_{new Token(*(node.get_token()))} {}
-TypeNode::~TypeNode() { delete token_; }
-Token *TypeNode::get_token() const noexcept { return token_; }
+    : TokenHolderNode{AstNodeType::TYPE, new Token(*(node.get_token()))} {}
+// TypeNode::~TypeNode() { delete token_; }
+// Token *TypeNode::get_token() const noexcept { return token_; }
 
 CompoundStatementNode::CompoundStatementNode(std::vector<AstNode *> &&statement_list)
     : AstNode{AstNodeType::COMPOUND_STATEMENT}, statement_list_{std::move(statement_list)} {}
@@ -52,26 +48,32 @@ AstNode *AssignmentStatementNode::get_rhs() const noexcept { return rhs_; }
 
 NoOperationNode::NoOperationNode() : AstNode{AstNodeType::NO_OPERATION} {}
 
+// BinaryOperatorNode::BinaryOperatorNode(Token *token, AstNode *lhs, AstNode *rhs)
+//     : AstNode{AstNodeType::BINARY_OPERATOR}, token_{token}, lhs_{lhs}, rhs_{rhs} {}
 BinaryOperatorNode::BinaryOperatorNode(Token *token, AstNode *lhs, AstNode *rhs)
-    : AstNode{AstNodeType::BINARY_OPERATOR}, token_{token}, lhs_{lhs}, rhs_{rhs} {}
-BinaryOperatorNode::~BinaryOperatorNode() { delete token_; }
-Token *BinaryOperatorNode::get_token() const noexcept { return token_; }
+    : TokenHolderNode{AstNodeType::BINARY_OPERATOR, token}, lhs_{lhs}, rhs_{rhs} {}
+// BinaryOperatorNode::~BinaryOperatorNode() { delete token_; }
+// Token *BinaryOperatorNode::get_token() const noexcept { return token_; }
 AstNode *BinaryOperatorNode::get_lhs() const noexcept { return lhs_; }
 AstNode *BinaryOperatorNode::get_rhs() const noexcept { return rhs_; }
 
+// UnaryOperatorNode::UnaryOperatorNode(Token *token, AstNode *rhs)
+//     : AstNode{AstNodeType::UNARY_OPERATOR}, token_{token}, rhs_{rhs} {}
 UnaryOperatorNode::UnaryOperatorNode(Token *token, AstNode *rhs)
-    : AstNode{AstNodeType::UNARY_OPERATOR}, token_{token}, rhs_{rhs} {}
-UnaryOperatorNode::~UnaryOperatorNode() { delete token_; }
-Token *UnaryOperatorNode::get_token() const noexcept { return token_; }
+    : TokenHolderNode{AstNodeType::UNARY_OPERATOR, token}, rhs_{rhs} {}
+// UnaryOperatorNode::~UnaryOperatorNode() { delete token_; }
+// Token *UnaryOperatorNode::get_token() const noexcept { return token_; }
 AstNode *UnaryOperatorNode::get_rhs() const noexcept { return rhs_; }
 
-IntNumNode::IntNumNode(IntNumToken *token) : AstNode{AstNodeType::INT_NUM}, token_{token} {}
-IntNumNode::~IntNumNode() { delete token_; }
-IntNumToken *IntNumNode::get_token() const noexcept { return token_; }
+// IntNumNode::IntNumNode(IntNumToken *token) : AstNode{AstNodeType::INT_NUM}, token_{token} {}
+IntNumNode::IntNumNode(IntNumToken *token) : TokenHolderNode{AstNodeType::INT_NUM, token} {}
+// IntNumNode::~IntNumNode() { delete token_; }
+// IntNumToken *IntNumNode::get_token() const noexcept { return token_; }
 
-RealNumNode::RealNumNode(RealNumToken *token) : AstNode{AstNodeType::REAL_NUM}, token_{token} {}
-RealNumNode::~RealNumNode() { delete token_; }
-RealNumToken *RealNumNode::get_token() const noexcept { return token_; }
+// RealNumNode::RealNumNode(RealNumToken *token) : AstNode{AstNodeType::REAL_NUM}, token_{token} {}
+RealNumNode::RealNumNode(RealNumToken *token) : TokenHolderNode{AstNodeType::REAL_NUM, token} {}
+// RealNumNode::~RealNumNode() { delete token_; }
+// RealNumToken *RealNumNode::get_token() const noexcept { return token_; }
 
 const std::string &map_ast_node_type_to_string(AstNodeType type)
 {
